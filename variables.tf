@@ -74,6 +74,11 @@ variable ip {
   default     = ""
 }
 
+variable ssh_source_ranges {
+  description = "Override the IP used in the `allow ssh` map for the mig."
+  default     = "0.0.0.0/0"
+}
+
 variable squid_enabled {
   description = "Enable squid3 proxy on port 3128."
   default     = "false"
