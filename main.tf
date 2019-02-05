@@ -56,6 +56,31 @@ data "google_compute_address" "default" {
   region  = "${var.region}"
 }
 
+resource "google_service_account" "natgw_user" {
+  account_id   = "terraform-natgw-user"
+  display_name = "Nat GW Service Account"
+}
+
+resource "google_project_iam_binding" "logging-write-role" {
+  role = "roles/logging.write"
+  members = ["serviceAccount:${google_service_account.natgw_user.email}"]
+}
+
+resource "google_project_iam_binding" "monitoring-write-role" {
+  role = "roles/monitoring.write"
+  members = ["serviceAccount:${google_service_account.natgw_user.email}"]
+}
+
+resource "google_project_iam_binding" "compute-admin" {
+  role = "roles/compute"
+  members = ["serviceAccount:${google_service_account.natgw_user.email}"]
+}
+
+resource "google_project_iam_binding" "dev-storage-admin" {
+  role = "roles/devstorage.full_control"
+  members = ["serviceAccount:${google_service_account.natgw_user.email}"]
+}
+
 module "nat-gateway" {
   source             = "github.com/GoogleCloudPlatform/terraform-google-managed-instance-group"
   project            = "${var.project}"
@@ -75,6 +100,7 @@ module "nat-gateway" {
   startup_script     = "${data.template_file.nat-startup-script.rendered}"
   wait_for_instances = true
   ssh_source_ranges = ["${var.ssh_source_ranges}"]
+  service_account_email = "${google_service_account.natgw_user.email}"
 
   access_config = [
     {
