@@ -61,23 +61,8 @@ resource "google_service_account" "natgw_user" {
   display_name = "Nat GW Service Account"
 }
 
-resource "google_project_iam_binding" "logging-write-role" {
-  role = "roles/logging.write"
-  members = ["serviceAccount:${google_service_account.natgw_user.email}"]
-}
-
-resource "google_project_iam_binding" "monitoring-write-role" {
-  role = "roles/monitoring.write"
-  members = ["serviceAccount:${google_service_account.natgw_user.email}"]
-}
-
-resource "google_project_iam_binding" "compute-admin" {
-  role = "roles/compute"
-  members = ["serviceAccount:${google_service_account.natgw_user.email}"]
-}
-
-resource "google_project_iam_binding" "dev-storage-admin" {
-  role = "roles/devstorage.full_control"
+resource "google_project_iam_binding" "natg-compute-admin" {
+  role = "roles/compute.admin"
   members = ["serviceAccount:${google_service_account.natgw_user.email}"]
 }
 
